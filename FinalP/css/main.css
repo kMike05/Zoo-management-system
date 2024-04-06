@@ -1,0 +1,55 @@
+#content main .table-data .order table tr td .btn-sec {
+    background-color:#3cb371 ;
+    color: #fff; 
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+
+#content main .table-data .order table tr td .btn-sec:hover {
+    background-color: #98fb98;
+}
+
+#content main .table-data .order table tr td .btn-delete {
+    background-color: #e74c3c; 
+    color: #fff; 
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+
+#content main .table-data .order table tr td .btn-delete:hover {
+    background-color: #fa8072; 
+}
+
+
+
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-container input[type=text] {
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 50%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: white;
+    background-image: url('searchicon.png');
+    background-position: 10px 10px; /* Position the search icon */
+    background-repeat: no-repeat;
+    padding-left: 40px; /* Add some padding to the left */
+}
+
+.search-container input[type=text]:focus {
+    outline: none;
+    border-color: #719ECE;
+    box-shadow: 0 0 8px 0 #719ECE;
+}
