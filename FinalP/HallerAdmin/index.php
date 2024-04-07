@@ -48,7 +48,7 @@ if(!isset($_SESSION['admin_name'])){
 				</a>
 			</li>
 			<li>
-				<a href="manage-species.php">
+				<a href="manage-animal.php">
 				<i class='bx bxl-baidu'></i>
 					<span class="text">Animals</span>
 				</a>

@@ -41,7 +41,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="manage-species.php">
+				<a href="manage-animal.php">
 				<i class='bx bxl-baidu'></i>
 					<span class="text">Animals</span>
 				</a>
@@ -61,7 +61,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="logout.php" class="logout">
+			<a href="signout.php" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>
@@ -95,5 +95,26 @@
 
 
         <script defer src="/script.js"></script>
+		<script>
+    document.getElementById("form-input").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        // Get the search input value
+        var searchInput = document.getElementById("search-input").value.toLowerCase();
+
+        // Get all species rows
+        var speciesRows = document.querySelectorAll("#content main .table-data .order table tbody tr");
+
+        // Loop through each species row and hide those that do not match the search input
+        speciesRows.forEach(function(row) {
+            var speciesName = row.children[1].textContent.toLowerCase(); // Get species name from second column
+            if (speciesName.includes(searchInput)) {
+                row.style.display = ""; // Show the row if it matches the search input
+            } else {
+                row.style.display = "none"; // Hide the row if it doesn't match the search input
+            }
+        });
+    });
+</script>
 </body>
 </html>

@@ -1,6 +1,21 @@
 <?php
 include('config1.php');
+
+// Fetch species data based on animals
+$sql = "SELECT DISTINCT Animal_species FROM tbl_animal";
+$res = mysqli_query($conn, $sql);
+
+// Store species and their corresponding total counts in an array
+$speciesCounts = array();
+while ($row = mysqli_fetch_assoc($res)) {
+    $species = $row['Animal_species'];
+    $sql = "SELECT SUM(Animal_count) AS total_count FROM tbl_animal WHERE Animal_species = '$species'";
+    $result = mysqli_query($conn, $sql);
+    $totalCount = mysqli_fetch_assoc($result)['total_count'];
+    $speciesCounts[$species] = $totalCount;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +26,18 @@ include('config1.php');
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<!-- My CSS -->
 	<link rel="stylesheet" href="admin.css">
+	<style>
+		.btn-view{
+			background-color: #2ed573; /* Blue color */
+    color: #fff; /* White text */
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+		}
+	</style>
+
 
 	<title>Admin</title>
 </head>
@@ -43,7 +70,7 @@ include('config1.php');
 				</a>
 			</li>
 			<li class="active">
-				<a href="manage-species.php" >
+				<a href="manage-animal.php" >
                 <i class='bx bxl-baidu'></i>
 					<span class="text">Animals</span>
 				</a>
@@ -125,59 +152,36 @@ include('config1.php');
                 <div class="table-data">
 				<div class="order">
                 <div class="head">
-						<h3>Manage Species</h3><br/>
-						<a href="add-species.php " class="btn-primary">Add Species</a>
+						<h3> Species</h3><br/>
+						
+						<a href="<?php echo SITEURL;?>HallerAdmin/manage-animal.php? " class="btn-primary">View Animals</a>
 					</div>
+					<div class="search-container">
+                <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search... ">
+				
+            </div>
 					<table>
 						<thead>
 							<tr>
-							    <th> ID</th>
 								<th> Species_Name</th>
 								<th>Animal_count</th>
-								<th>Actions</th>
+								<!--<th>Actions</th>-->
 							</tr>
 						</thead>
 						<tbody>
-							<?php
-							$sql="SELECT * FROM tbl_species";
-
-							$res=mysqli_query($conn,$sql);
-							if($res==TRUE){
-								$count=mysqli_num_rows($res);
-								$sn=1;
-								if($count>0){
-									while($rows=mysqli_fetch_assoc($res)){
-										$id=$rows['id'];
-										$name=$rows['species_name'];
-										$count=$rows['Animal_count'];
-										?>
-										<tr>
-											
-										<td>
-									<?=$sn++?>
-								</td>
-										<td>
-									<p><?=$name?></p>
-								</td>
-								<td><?=$count?></td>
-								<td>
-                                <a href="<?php echo SITEURL;?>HallerAdmin/manage-animal.php?id=<?php echo $id;?>" class="btn-pass">View Animals</a>
-									<a href="<?php echo SITEURL;?>HallerAdmin/update-species.php?id=<?php echo $id;?>" class="btn-sec">Update Species</a>
-									<a href="<?php echo SITEURL;?>HallerAdmin/delete-species.php?id=<?php echo $id;?>" class="btn-delete" onclick="return confirmDelete()">Delete Species</a>
-                                </span></td>
-							</tr>
-										<?php
-
-									}
-
-								}else
-								{
-									echo "<div class='error'>no records found!!</div>";
-
-								}
-							}
 							
-							?>
+						<?php
+                    // Iterate through each species
+                    foreach ($speciesCounts as $species => $totalCount) {
+                        ?>
+                        <tr>
+                            <td><?php echo $species; ?></td>
+                            <td><?php echo $totalCount; ?></td>
+                       
+                        </tr>
+                        <?php
+                    }
+                    ?>
 							
 						</tbody>
 					</table>
@@ -203,6 +207,24 @@ include('config1.php');
 #content main .table-data .order table tr td .btn-pass:hover {
     background-color: #7bed9f; /* Lighter shade of blue on hover */
 }
+.search-container input[type=text] {
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 30%;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: white;
+    padding-left: 40px; /* Add some padding to the left */
+}
+
+.search-container input[type=text]:focus {
+    outline: none;
+    border-color: #719ECE;
+    box-shadow: 0 0 8px 0 #719ECE;
+}
 
 				</style>
 				<script defer src="/script.js"></script>
@@ -211,6 +233,40 @@ include('config1.php');
         return confirm("Are you sure you want to delete this species?");
     }
 </script>
+<script>
+function searchTable() {
+    // Declare variables
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.querySelector(".table-data table");
+    tr = table.getElementsByTagName("tr");
 
+    // Loop through all table rows, and hide those that don't match the search query
+    for (i = 0; i < tr.length; i++) {
+        var found = false; // Flag to determine if the search term is found in any column
+        // Skip the header row
+        if (i !== 0) {
+            // Loop through all columns of each row
+            for (var j = 0; j < tr[i].cells.length; j++) {
+                td = tr[i].cells[j];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        // If the search term is found in any column, show the row
+                        tr[i].style.display = "";
+                        found = true;
+                        break; // No need to check other columns once found
+                    }
+                }
+            }
+            // If the search term is not found in any column, hide the row
+            if (!found) {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
 </body>
 </html>

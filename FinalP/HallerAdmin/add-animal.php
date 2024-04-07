@@ -1,7 +1,44 @@
-<?php
-include('dashboard.php');
-include('config1.php');
-?>
+
+    <?php
+    include('dashboard.php');
+    include('config1.php');
+
+   if(isset($_POST['submit'])){
+    $name=$_POST['animal_name'];
+    $Animal_species=$_POST['Animal_species'];
+    $Animal_count=$_POST['Animal_count'];
+    $Description=$_POST['Description'];
+    $Animal_pic=$_FILES['Animal_pic']['name'];
+    $tmp_name=$_FILES['Animal_pic']['tmp_name'];
+    $folder='img/'.$Animal_pic;
+
+    if(move_uploaded_file($tmp_name, $folder)) {
+        echo "<h2>File uploaded successfully</h2>";
+    } else {
+        echo "<h2>File not uploaded</h2>";
+    }
+    
+
+    $sql="INSERT INTO tbl_animal SET 
+    animal_name='$name',
+    Animal_species='$Animal_species',
+    Animal_count='$Animal_count',
+    Animal_description='$Description',
+    Animal_pic='$Animal_pic'
+
+    ";
+    $res = mysqli_query($conn, $sql);
+
+    if($res == TRUE){
+        $_SESSION['add_animal'] = "<div class='success'>Animal added successfully!!</div>";
+        
+        //REDIRECT
+        header('location:'.SITEURL.'HallerAdmin/manage-animal.php');
+        exit(); // Exit after redirection
+    } else {
+        echo "<div class='error'>Failed to add Animal. Try again later!!</div>";
+    }
+   }?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,18 +57,23 @@ include('config1.php');
         <div class="form-container">
         <h2>Add animal</h2>
      
-        <form id="admin-form" action="" method="POST" onsubmit="return validateForm()">
+        <form id="admin-form" action="" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             <div class="form-group">
                 <label for="animal_name">animal Name</label>
                 <input type="text" id="animal_name" name="animal_name" placeholder="Enter animal name" value="" required>
             </div>
             <div class="form-group">
-                <label for="animal_species">Species</label>
-                <input type="text" id="animal_species" name="animal_species" placeholder="Enter animal species" value="" required>
+                <label for="Animal_species">Species</label>
+                <input type="text" id="Animal_species" name="Animal_species" placeholder="Enter animal species" value="" required>
+            </div>
+            <div class="form-group">
+                <label for="Animal_count">Animal Count</label>
+                <input type="number" id="Animal_count" name="Animal_count" min="1" placeholder="Animal Count" required>
+                <div id="animalCountError" class="error-message"></div> <!-- Error message placeholder -->
             </div>
             <div class="form-group">
                 <label for="animal_name">Description</label>
-                <textarea id="message" name="message" placeholder="Description of the animal" cols="30" rows="5"></textarea>
+                <textarea id="message" name="Description" placeholder="Description of the animal" cols="30" rows="5"></textarea>
             </div>
             <div class="form-group">
                 <label for="count">Picture</label>
@@ -44,27 +86,7 @@ include('config1.php');
         
         </form>
     </div>
-    <?php
-   if(isset($_POST['submit'])){
-    $name=$_POST['animal_name'];
-    $Animal_count=$_POST['Animal_count'];
 
-    $sql="INSERT INTO tbl_animal SET 
-    animal_name='$name',
-    Animal_count='$Animal_count'
-
-    ";
-    $res=mysqli_query($conn, $sql);
-    if($res==TRUE){
-        $_SESSION['add_animal']="<div class='success'>animal added successfully!!</div>";
-        
-        //REDIRECT
-        header('location:'.SITEURL.'HallerAdmin/manage-animal.php');
-    }else{
-        echo "<div class='error'>Failed to add animal. Try again later!!";
-
-    }
-   }?>
 <script>
     function validateForm() {
         var animalName = document.getElementById("animal_name").value.trim();
